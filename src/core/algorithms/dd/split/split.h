@@ -18,7 +18,7 @@
 namespace algos::dd {
 
 using DF = model::DF;
-using DD = model::DD;
+using DDString = model::DD;
 
 class Split : public Algorithm {
 private:
@@ -40,7 +40,7 @@ private:
     std::vector<model::DFConstraint> min_max_dif_;
     std::vector<std::vector<std::vector<double>>> distances_;
     std::vector<std::pair<std::size_t, std::size_t>> tuple_pairs_;
-    std::list<DD> dd_collection_;
+    std::list<DDString> dd_collection_;
 
     void RegisterOptions();
     void SetLimits();
@@ -55,7 +55,7 @@ private:
     void InsertDistance(model::ColumnIndex column_index, std::size_t first_index,
                         std::size_t second_index, double& min_dif, double& max_dif);
     bool CheckDF(DF const& dep, std::pair<std::size_t, std::size_t> tuple_pair);
-    bool VerifyDD(DD const& dep);
+    bool VerifyDD(DDString const& dep);
     void CalculateAllDistances();
     bool IsFeasible(DF const& d);
     std::vector<DF> SearchSpace(std::vector<model::ColumnIndex>& indices);
@@ -67,19 +67,19 @@ private:
     std::vector<DF> DoPositivePruning(std::vector<DF> const& search, DF const& first_df);
     std::pair<std::vector<DF>, std::vector<DF>> PositiveSplit(std::vector<DF> const& search,
                                                               DF const& first_df);
-    std::list<DD> MergeReducedResults(std::list<DD> const& base_dds,
-                                      std::list<DD> const& dds_to_merge);
-    std::list<DD> NegativePruningReduce(DF const& rhs, std::vector<DF> const& search,
+    std::list<DDString> MergeReducedResults(std::list<DDString> const& base_dds,
+                                      std::list<DDString> const& dds_to_merge);
+    std::list<DDString> NegativePruningReduce(DF const& rhs, std::vector<DF> const& search,
                                         unsigned& cnt);
-    std::list<DD> HybridPruningReduce(DF const& rhs, std::vector<DF> const& search, unsigned& cnt);
-    std::list<DD> InstanceExclusionReduce(
+    std::list<DDString> HybridPruningReduce(DF const& rhs, std::vector<DF> const& search, unsigned& cnt);
+    std::list<DDString> InstanceExclusionReduce(
             std::vector<std::pair<std::size_t, std::size_t>> const& tuple_pairs,
             std::vector<DF> const& search, DF const& rhs, unsigned& cnt);
     void CalculateTuplePairs();
     unsigned ReduceDDs(auto const& start_time);
     unsigned RemoveRedundantDDs();
     unsigned RemoveTransitiveDDs();
-    model::DDString DDToDDString(DD const& dd) const;
+    model::DDString DDToDDString(DDString const& dd) const;
     void PrintResults();
 
 protected:
@@ -89,7 +89,7 @@ protected:
 
 public:
     Split();
-    std::list<DD> const& GetDDs() const;
+    std::list<DDString> const& GetDDs() const;
     std::vector<model::DFConstraint> const& GetMinMaxDif() const;
     std::list<model::DDString> GetDDStringList() const;
 };
