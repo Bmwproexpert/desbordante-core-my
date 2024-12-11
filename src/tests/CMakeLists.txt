@@ -5,7 +5,8 @@ enable_testing()
 
 # building tests
 file(GLOB_RECURSE test_sources "*.h*" "*.cpp*")
-add_executable(${BINARY} ${test_sources})
+add_executable(${BINARY} ${test_sources}
+        test_dd_verifier.cpp)
 add_test(NAME ${BINARY} COMMAND ${BINARY})
 
 # linking with gtest and implemented classes
