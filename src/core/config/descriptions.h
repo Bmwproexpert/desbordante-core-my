@@ -185,6 +185,6 @@ constexpr auto kDComparableThreshold =
         "Threshold for the ratio of smaller to larger average values between two numeric columns";
 constexpr auto kDEvidenceThreshold =
         "Denotes the maximum fraction of evidence violations allowed for a Denial Constraint to be "
-        "considered approximate.";
-constexpr auto kDDDString = "Difference Dependency that needs to be verified";
+        "considered approximate.";;
+constexpr auto kDDDString = "Differential Dependency that needs to be verified";
 }  // namespace config::descriptions
