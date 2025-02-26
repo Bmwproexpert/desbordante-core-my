@@ -21,6 +21,7 @@
 #include "statistics/bind_statistics.h"
 #include "ucc/bind_ucc.h"
 #include "ucc/bind_ucc_verification.h"
+#include "dd/bind_dd_verification.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -40,7 +41,7 @@ PYBIND11_MODULE(desbordante, module, pybind11::mod_gil_not_used()) {
     for (auto bind_func :
          {BindMainClasses, BindDataTypes, BindFd, BindCfd, BindAr, BindUcc, BindAc, BindOd, BindNd,
           BindFdVerification, BindMfdVerification, BindUccVerification, BindStatistics, BindInd,
-          BindGfdVerification, BindSplit, BindDynamicFdVerification, BindNdVerification}) {
+          BindGfdVerification, BindSplit, BindDynamicFdVerification, BindNdVerification, BindDDVerification}) {
         bind_func(module);
     }
 }
