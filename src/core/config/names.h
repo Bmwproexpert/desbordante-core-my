@@ -62,5 +62,5 @@ constexpr auto kNumColumns = "num_columns";
 constexpr auto kInsertStatements = "insert";
 constexpr auto kDeleteStatements = "delete";
 constexpr auto kUpdateStatements = "update";
-constexpr auto kDDString = "dd";
+constexpr auto kDDString = "dds";
 }  // namespace config::names
