@@ -8,10 +8,11 @@ namespace algos {
 
 using AlgorithmTypes =
         std::tuple<Depminer, DFD, FastFDs, FDep, FdMine, Pyro, Tane, PFDTane, FUN, hyfd::HyFD, Aid,
-                   Apriori, metric::MetricVerifier, DataStats, fd_verifier::FDVerifier, HyUCC,
-                   PyroUCC, cfd::FDFirstAlgorithm, ACAlgorithm, UCCVerifier, Faida, Spider, Mind,
-                   Fastod, GfdValidation, EGfdValidation, NaiveGfdValidation, order::Order,
-                   dd::Split>;
+                   EulerFD, Apriori, des::DES, metric::MetricVerifier, DataStats,
+                   fd_verifier::FDVerifier, HyUCC, PyroUCC, HPIValid, cfd::FDFirstAlgorithm,
+                   ACAlgorithm, UCCVerifier, Faida, Spider, Mind, INDVerifier, Fastod,
+                   GfdValidation, EGfdValidation, NaiveGfdValidation, order::Order, dd::Split,
+                   Cords, hymd::HyMD, PFDVerifier>;
 
 // clang-format off
 /* Enumeration of all supported non-pipeline algorithms. If you implement a new
@@ -33,9 +34,13 @@ BETTER_ENUM(AlgorithmType, char,
     fun,
     hyfd,
     aidfd,
+    eulerfd,
 
 /* Association rules mining algorithms */
     apriori,
+    
+/* Numerical association rules mining algorithms*/
+    des,
 
 /* Metric verifier algorithm */
     metric,
@@ -49,6 +54,7 @@ BETTER_ENUM(AlgorithmType, char,
 /* Unique Column Combination mining algorithms */
     hyucc,
     pyroucc,
+    hpivalid,
 
 /* CFD mining algorithms */
     fd_first_dfs,
@@ -64,6 +70,9 @@ BETTER_ENUM(AlgorithmType, char,
     spider,
     mind,
 
+/* IND verifier algorithm */
+    ind_verifier,
+
 /* Order dependency mining algorithms */
     fastod,
 
@@ -76,7 +85,16 @@ BETTER_ENUM(AlgorithmType, char,
     order,
 
 /* Differential dependencies mining algorithm */
-    split
+    split,
+
+/* SFD mining algorithm */
+    cords,
+
+/* MD mining algorithms */
+    hymd,
+
+/* PFD verifier algorithm */
+    pfd_verifier
 )
 // clang-format on
 

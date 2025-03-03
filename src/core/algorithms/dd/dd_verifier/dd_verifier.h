@@ -9,7 +9,7 @@ namespace algos::dd {
     using DFs = model::DFStringConstraint;
     using DDs = model::DDString;
 
-    struct DDVerifier : Algorithm {
+    class DDVerifier : public Algorithm {
     private:
         DDs dd_;
         config::InputTable input_table_;
@@ -35,9 +35,9 @@ namespace algos::dd {
 
         void CheckDFOnRhs(const std::vector<std::pair<int, int> > &lhs);
 
-        void ResetState() {
-            num_rows_ = 0;
+        void ResetState() final {
             num_columns_ = 0;
+            num_rows_ = 0;
         }
 
     protected:

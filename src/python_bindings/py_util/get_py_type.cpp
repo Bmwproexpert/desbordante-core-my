@@ -9,8 +9,11 @@
 #include <pybind11/stl/filesystem.h>
 
 #include "algorithms/cfd/enums.h"
+#include "algorithms/md/hymd/enums.h"
+#include "algorithms/md/hymd/hymd.h"
 #include "algorithms/metric/enums.h"
 #include "association_rules/ar_algorithm_enums.h"
+#include "config/custom_random_seed/type.h"
 #include "config/error_measure/type.h"
 #include "config/tabular_data/input_table_type.h"
 #include "config/tabular_data/input_tables_type.h"
@@ -72,13 +75,24 @@ py::tuple GetPyType(std::type_index type_index) {
             PyTypePair<int, kPyInt>,
             PyTypePair<unsigned int, kPyInt>,
             PyTypePair<double, kPyFloat>,
+            PyTypePair<size_t, kPyInt>,
             PyTypePair<long double, kPyFloat>,
+            PyTypePair<std::size_t, kPyInt>,
+            PyTypePair<config::CustomRandomSeedType, kPyInt>,
             PyTypePair<algos::metric::Metric, kPyStr>,
             PyTypePair<algos::metric::MetricAlgo, kPyStr>,
-            PyTypePair<config::ErrorMeasureType, kPyStr>,
+            PyTypePair<config::PfdErrorMeasureType, kPyStr>,
+            PyTypePair<config::AfdErrorMeasureType, kPyStr>,
             PyTypePair<algos::InputFormat, kPyStr>,
             PyTypePair<algos::cfd::Substrategy, kPyStr>,
+            PyTypePair<algos::hymd::LevelDefinition, kPyStr>,
             PyTypePair<std::vector<unsigned int>, kPyList, kPyInt>,
+            {typeid(algos::hymd::HyMD::ColumnMatches),
+             []() {
+                 return MakeTypeTuple(
+                         kPyList,
+                         py::type::of<algos::hymd::preprocessing::column_matches::ColumnMatch>());
+             }},
             {typeid(config::InputTable),
              []() { return MakeTypeTuple(py::type::of<config::InputTable>()); }},
             {typeid(config::InputTables),
@@ -86,6 +100,7 @@ py::tuple GetPyType(std::type_index type_index) {
             PyTypePair<std::filesystem::path, kPyStr>,
             PyTypePair<std::vector<std::filesystem::path>, kPyList, kPyStr>,
             PyTypePair<std::unordered_set<size_t>, kPySet, kPyInt>,
+            PyTypePair<std::string, kPyStr>,
     };
     return type_map.at(type_index)();
 }
