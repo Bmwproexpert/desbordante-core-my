@@ -116,7 +116,7 @@ unsigned long long Split::ExecuteInternal() {
 unsigned Split::ReduceDDs(auto const& start_time) {
     unsigned search_size = 0;
     std::vector<DF> search, dfs_y;
-    std::list<DDString> reduced;
+    std::list<DD> reduced;
 
     for (model::ColumnIndex index = 0; index < num_columns_; index++) {
         std::vector<model::ColumnIndex> indices;
@@ -164,7 +164,7 @@ unsigned Split::ReduceDDs(auto const& start_time) {
 
 unsigned Split::RemoveRedundantDDs() {
     unsigned num_cycles = 0;
-    std::list<DDString> dd_collection_copy;
+    std::list<DD> dd_collection_copy;
 
     while (true) {
         num_cycles++;
@@ -195,7 +195,7 @@ unsigned Split::RemoveRedundantDDs() {
 
 unsigned Split::RemoveTransitiveDDs() {
     unsigned num_cycles = 0;
-    std::list<DDString> results_copy;
+    std::list<DD> results_copy;
 
     while (true) {
         num_cycles++;
@@ -261,7 +261,7 @@ inline bool Split::CheckDF(DF const& dif_func, std::pair<std::size_t, std::size_
     return true;
 }
 
-bool Split::VerifyDD(DDString const& dep) {
+bool Split::VerifyDD(DD const& dep) {
     for (std::size_t i = 0; i < num_rows_; i++) {
         for (std::size_t j = i + 1; j < num_rows_; j++) {
             if (CheckDF(dep.lhs, {i, j}) && !CheckDF(dep.rhs, {i, j})) return false;
@@ -501,9 +501,9 @@ std::pair<std::vector<DF>, std::vector<DF>> Split::PositiveSplit(std::vector<DF>
 }
 
 // must be inline for optimization (gcc 11.4.0)
-inline std::list<DDString> Split::MergeReducedResults(std::list<DDString> const& base_dds,
-                                                std::list<DDString> const& dds_to_merge) {
-    std::list<DDString> merged_dds;
+inline std::list<DD> Split::MergeReducedResults(std::list<DD> const& base_dds,
+                                                std::list<DD> const& dds_to_merge) {
+    std::list<DD> merged_dds;
     std::size_t const cur_size = base_dds.size();
 
     for (auto const& dd_to_merge : dds_to_merge) {
@@ -522,7 +522,7 @@ inline std::list<DDString> Split::MergeReducedResults(std::list<DDString> const&
     return merged_dds;
 }
 
-std::list<DDString> Split::NegativePruningReduce(DF const& rhs, std::vector<DF> const& search,
+std::list<DD> Split::NegativePruningReduce(DF const& rhs, std::vector<DF> const& search,
                                            unsigned& cnt) {
     if (!search.size()) return {};
 
@@ -536,21 +536,21 @@ std::list<DDString> Split::NegativePruningReduce(DF const& rhs, std::vector<DF> 
 
     auto const [prune, remainder] = NegativeSplit(search, last_df);
 
-    std::list<DDString> dds = NegativePruningReduce(rhs, prune, cnt);
+    std::list<DD> dds = NegativePruningReduce(rhs, prune, cnt);
     if (!dds.size()) dds.push_back({last_df, rhs});
-    std::list<DDString> const remaining_dds = NegativePruningReduce(rhs, remainder, cnt);
+    std::list<DD> const remaining_dds = NegativePruningReduce(rhs, remainder, cnt);
 
-    std::list<DDString> merged_dds = MergeReducedResults(dds, remaining_dds);
+    std::list<DD> merged_dds = MergeReducedResults(dds, remaining_dds);
     dds.splice(dds.end(), merged_dds);
 
     return dds;
 }
 
-std::list<DDString> Split::HybridPruningReduce(DF const& rhs, std::vector<DF> const& search,
+std::list<DD> Split::HybridPruningReduce(DF const& rhs, std::vector<DF> const& search,
                                          unsigned& cnt) {
     if (!search.size()) return {};
 
-    std::list<DDString> dds;
+    std::list<DD> dds;
     DF const first_df = *search.begin();
     DF const last_df = *search.rbegin();
 
@@ -558,7 +558,7 @@ std::list<DDString> Split::HybridPruningReduce(DF const& rhs, std::vector<DF> co
     if (VerifyDD({first_df, rhs})) {
         dds.push_back({first_df, rhs});
         std::vector<DF> remainder = DoPositivePruning(search, first_df);
-        std::list<DDString> remaining_dds = HybridPruningReduce(rhs, remainder, cnt);
+        std::list<DD> remaining_dds = HybridPruningReduce(rhs, remainder, cnt);
         dds.splice(dds.end(), remaining_dds);
         return dds;
     }
@@ -572,20 +572,20 @@ std::list<DDString> Split::HybridPruningReduce(DF const& rhs, std::vector<DF> co
     auto const [prune, remainder] = PositiveSplit(search, first_df);
 
     dds = HybridPruningReduce(rhs, remainder, cnt);
-    std::list<DDString> const pruning_dds = HybridPruningReduce(rhs, prune, cnt);
+    std::list<DD> const pruning_dds = HybridPruningReduce(rhs, prune, cnt);
 
-    std::list<DDString> merged_dds = MergeReducedResults(dds, pruning_dds);
+    std::list<DD> merged_dds = MergeReducedResults(dds, pruning_dds);
     dds.splice(dds.end(), merged_dds);
 
     return dds;
 }
 
-std::list<DDString> Split::InstanceExclusionReduce(
+std::list<DD> Split::InstanceExclusionReduce(
         std::vector<std::pair<std::size_t, std::size_t>> const& tuple_pairs,
         std::vector<DF> const& search, DF const& rhs, unsigned& cnt) {
     if (!search.size()) return {};
 
-    std::list<DDString> dds;
+    std::list<DD> dds;
     DF const first_df = *search.begin();
     DF const last_df = *search.rbegin();
     std::vector<std::pair<std::size_t, std::size_t>> remaining_tuple_pairs;
@@ -598,7 +598,7 @@ std::list<DDString> Split::InstanceExclusionReduce(
     if (!remaining_tuple_pairs.size()) {
         dds.push_back({first_df, rhs});
         std::vector<DF> remainder = DoPositivePruning(search, first_df);
-        std::list<DDString> remaining_dds = InstanceExclusionReduce(tuple_pairs, remainder, rhs, cnt);
+        std::list<DD> remaining_dds = InstanceExclusionReduce(tuple_pairs, remainder, rhs, cnt);
         dds.splice(dds.end(), remaining_dds);
         return dds;
     }
@@ -619,10 +619,10 @@ std::list<DDString> Split::InstanceExclusionReduce(
     auto const [prune, remainder] = PositiveSplit(search, first_df);
 
     dds = InstanceExclusionReduce(tuple_pairs, remainder, rhs, cnt);
-    std::list<DDString> const pruning_dds =
+    std::list<DD> const pruning_dds =
             InstanceExclusionReduce(remaining_tuple_pairs, prune, rhs, cnt);
 
-    std::list<DDString> merged_dds = MergeReducedResults(dds, pruning_dds);
+    std::list<DD> merged_dds = MergeReducedResults(dds, pruning_dds);
     dds.splice(dds.end(), merged_dds);
 
     return dds;
@@ -644,7 +644,7 @@ void Split::PrintResults() {
     }
 }
 
-std::list<DDString> const& Split::GetDDs() const {
+std::list<DD> const& Split::GetDDs() const {
     return dd_collection_;
 }
 
@@ -652,7 +652,7 @@ std::vector<model::DFConstraint> const& Split::GetMinMaxDif() const {
     return min_max_dif_;
 }
 
-model::DDString Split::DDToDDString(DDString const& dd) const {
+model::DDString Split::DDToDDString(DD const& dd) const {
     model::DDString dd_string;
     for (model::ColumnIndex index = 0; index < num_columns_; index++) {
         if (dd.lhs[index] != min_max_dif_[index]) {
